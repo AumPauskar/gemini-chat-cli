@@ -116,11 +116,28 @@ void send_message(const char *prompt, const char *api_key) {
     curl_global_cleanup();
 }
 
-int main() {
+int main(int argc, char *argv[]) {
     const char *GOOGLE_API_KEY = getenv("GEMINI_API");
     if (GOOGLE_API_KEY == NULL) {
         fprintf(stderr, "Environment variable GEMINI_API not set.\n");
         return 1;
+    }
+
+    if (argc == 3 && strcmp(argv[1], "-q") == 0) {
+        // Single message mode
+        send_message(argv[2], GOOGLE_API_KEY);
+        return 0;
+    }
+
+    if (argc == 2 && strcmp(argv[1], "-h") == 0) {
+        // Help message
+        printf("Usage\n----------------------------------------\n");
+        printf("1. Interactive mode\t: gem\n");
+        printf("2. Single message mode\t: gem -q \"prompt\"\n");
+        printf("3. Help\t\t\t: gem -h\n");
+        printf("\n- ->exit<- keyword may be used to quit interactive chat\n");
+        printf("- The gem command is interchangeable with %s\n", argv[0]);
+        return 0;
     }
 
     char user_input[1024];

@@ -9,12 +9,18 @@
         ```bash
         export GEMINI_API=<API_KEY>
         ```
-    - Persistent way:
+    - Persistent way (Recommended):
         - Open the `.bashrc` or `.zshrc` file in the home directory.
         - Add the following line at the end of the file:
             ```bash
             export GEMINI_API=<API_KEY>
             ```
+5. (Optional) Add an alias
+    - Open the `.bashrc` or `.zshrc` file in the home directory.
+    - Add the following line at the end of the file:
+        ```bash
+        alias gem='~/path/to/posix-chat'
+        ```
 
 ## Building the program
 
@@ -34,3 +40,22 @@
 ```bash
 gcc posix-chat.c -o posix-chat -lcurl -ljansson
 ```
+
+
+### Usage
+
+Assuming you have saves the alias in the `.bashrc` or `.zshrc` file, built the program and set the environment variable, you can run the program using the following command:
+```bash
+gem
+```
+This will open an interactive chat interface in the CLI.
+
+```bash
+gem -q "Hello"
+```
+This will send the message "Hello" to the chatbot and print the response.
+
+```bash
+gem -h
+```
+This will print the help message.
