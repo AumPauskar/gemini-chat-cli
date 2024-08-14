@@ -3,6 +3,7 @@
 #include <string.h>
 #include <curl/curl.h>
 #include <jansson.h>
+#include <ctype.h>
 
 #define BASE_URL "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key="
 
@@ -29,6 +30,17 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
     mem->memory[mem->size] = 0;
 
     return real_size;
+}
+
+// Function to check if a string is a number
+int is_number(const char *str) {
+    while (*str) {
+        if (!isdigit(*str)) {
+            return 0;
+        }
+        str++;
+    }
+    return 1;
 }
 
 // Function to construct the full URL
@@ -129,12 +141,43 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
+    if (argc == 4 && strcmp(argv[1], "-q") == 0 && is_number(argv[2])) {
+        int number = atoi(argv[2]);
+        
+        // Allocate memory for the message and constraint
+        char message[256];
+        char constraint[64];
+
+        // Copy argv[3] into message
+        strncpy(message, argv[3], sizeof(message) - 1);
+        message[sizeof(message) - 1] = '\0';  // Ensure null termination
+
+        // Format the constraint string
+        snprintf(constraint, sizeof(constraint), ". Answer this query in %d words or less", number);
+
+        // Check if there's enough space in the message buffer to concatenate
+        if (strlen(message) + strlen(constraint) + 1 > sizeof(message)) {
+            fprintf(stderr, "Error: Message too long to concatenate constraint.\n");
+            return 1;
+        }
+
+        // Append constraint to the message
+        strncat(message, constraint, sizeof(message) - strlen(message) - 1);
+
+        // Send the message
+        send_message(message, GOOGLE_API_KEY);
+
+        return 0;
+    }
+
     if (argc == 2 && strcmp(argv[1], "-h") == 0) {
         // Help message
         printf("Usage\n----------------------------------------\n");
-        printf("1. Interactive mode\t: gem\n");
-        printf("2. Single message mode\t: gem -q \"prompt\"\n");
-        printf("3. Help\t\t\t: gem -h\n");
+        printf("1. Interactive mode\t\t\t: gem\n");
+        printf("2. Single message mode\t\t\t: gem -q \"prompt\"\n");
+        printf("2a. Single message mode with word limit\t: gem -q <word limit> \"prompt\"\n");
+        printf("\t\t\t\t Example: gem -q 50 \"prompt\"\n\n");
+        printf("3. Help\t\t\t\t\t: gem -h\n");
         printf("\n- ->exit<- keyword may be used to quit interactive chat\n");
         printf("- The gem command is interchangeable with %s\n", argv[0]);
         return 0;
