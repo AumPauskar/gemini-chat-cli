@@ -13,7 +13,7 @@
         - Open the `.bashrc` or `.zshrc` file in the home directory.
         - Add the following line at the end of the file:
             ```bash
-            export GEMINI_API=<API_KEY>
+            export GEMINI_API=<API_KEY>buildin
             ```
 5. (Optional) Add an alias
     - Open the `.bashrc` or `.zshrc` file in the home directory.
@@ -34,6 +34,10 @@
 - Fedora
     ```bash
     sudo dnf install curl-devel jansson-devel
+    ```
+- Arch
+    ```bash
+    sudo pacman -S curl jansson
     ```
 
 ### Building the program
